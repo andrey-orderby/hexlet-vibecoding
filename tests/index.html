@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Тесты калькулятора</title>
+  <style>
+    body { font: 15px/1.5 system-ui, sans-serif; margin: 24px 16px; background: #fff; color: #1c1f24; }
+    .pass { color: #2f7d5b; }
+    .fail { color: #c2413a; }
+    pre { margin: 2px 0 8px 20px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Тесты calc.js</h1>
+  <p id="summary">Выполняются…</p>
+  <ul id="results"></ul>
+
+  <script type="module">
+    import { tests } from './calc.test.js';
+
+    const assert = {
+      equal(actual, expected) {
+        if (!Object.is(actual, expected)) {
+          throw new Error(`ожидалось ${JSON.stringify(expected)}, получено ${JSON.stringify(actual)}`);
+        }
+      },
+      deepEqual(actual, expected) {
+        const a = JSON.stringify(actual);
+        const e = JSON.stringify(expected);
+        if (a !== e) throw new Error(`ожидалось ${e}, получено ${a}`);
+      },
+    };
+
+    const results = Object.entries(tests).map(([name, fn]) => {
+      try {
+        fn(assert);
+        return { name, ok: true };
+      } catch (error) {
+        return { name, ok: false, message: error.message };
+      }
+    });
+
+    const list = document.getElementById('results');
+    results.forEach(({ name, ok, message }) => {
+      const li = document.createElement('li');
+      li.className = ok ? 'pass' : 'fail';
+      li.textContent = `${ok ? '✓' : '✗'} ${name}`;
+      if (message) {
+        const pre = document.createElement('pre');
+        pre.textContent = message;
+        li.append(pre);
+      }
+      list.append(li);
+    });
+
+    const failed = results.filter((r) => !r.ok).length;
+    const summary = document.getElementById('summary');
+    summary.className = failed ? 'fail' : 'pass';
+    summary.textContent = `Пройдено ${results.length - failed} из ${results.length}`;
+    window.testResults = results;
+  </script>
+</body>
+</html>

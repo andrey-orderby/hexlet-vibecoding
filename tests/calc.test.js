@@ -4,6 +4,7 @@ import {
   calcMacros,
   calcMacroShares,
   calcDailyNorm,
+  calcWaterNorm,
   calcPortion,
   sumEntries,
 } from '../js/calc.js';
@@ -24,6 +25,7 @@ export const tests = {
       tdee: 2267,
       target: 2267,
       macros: { protein: 170, fat: 76, carbs: 227 },
+      water: 2100,
     });
   },
   'calcDailyNorm: похудение отнимает 15%'(assert) {
@@ -33,6 +35,13 @@ export const tests = {
   },
   'calcDailyNorm: набор массы добавляет 15%'(assert) {
     assert.equal(calcDailyNorm({ ...male, goal: 'gain' }).target, 2607);
+  },
+  'calcWaterNorm: 30 мл на кг веса'(assert) {
+    assert.equal(calcWaterNorm(70), 2100);
+    assert.equal(calcWaterNorm(80), 2400);
+  },
+  'calcWaterNorm: округляет до 50 мл'(assert) {
+    assert.equal(calcWaterNorm(75.3), 2250);
   },
   'calcMacros: делит калории 30/30/40'(assert) {
     assert.deepEqual(calcMacros(2000), { protein: 150, fat: 67, carbs: 200 });

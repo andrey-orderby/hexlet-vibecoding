@@ -1,14 +1,17 @@
 import {
   ACTIVITY_LEVELS,
   GOALS,
+  MACRO_LABELS,
   validateProfile,
   calcDailyNorm,
+  calcMacroShares,
   calcPortion,
   sumEntries,
 } from './calc.js';
 import { FOODS } from './foods.js';
 
 const STORAGE_KEY = 'calorie-calc:v1';
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const $ = (id) => document.getElementById(id);
 
@@ -87,6 +90,55 @@ function applyProfile(profile) {
   return true;
 }
 
+function createSvg(tag, attrs = {}) {
+  const el = document.createElementNS(SVG_NS, tag);
+  Object.entries(attrs).forEach(([name, value]) => el.setAttribute(name, value));
+  return el;
+}
+
+// Плитки БЖУ (граммы и % калорий) и кольцевая диаграмма долей калорий.
+function renderMacroChart(prefix, macros) {
+  const shares = calcMacroShares(macros);
+  Object.entries(shares).forEach(([name, { percent }]) => {
+    $(`${prefix}-${name}`).textContent = macros[name];
+    $(`${prefix}-${name}-pct`).textContent = percent;
+  });
+
+  const slices = Object.entries(shares).filter(([, share]) => share.kcal > 0);
+  const totalKcal = slices.reduce((sum, [, share]) => sum + share.kcal, 0);
+  const circle = { cx: 60, cy: 60, r: 42 };
+  const circumference = 2 * Math.PI * circle.r;
+  // Зазор между секторами — по 2 единицы, чтобы они не сливались.
+  const gap = slices.length > 1 ? 2 : 0;
+
+  const svg = createSvg('svg', { viewBox: '0 0 120 120', role: 'img' });
+  svg.setAttribute('aria-label', slices.length > 0
+    ? `Доля калорий: ${slices.map(([name, share]) => `${MACRO_LABELS[name].toLowerCase()} ${share.percent}%`).join(', ')}`
+    : 'Доля калорий: нет данных');
+
+  const ring = createSvg('g', { transform: 'rotate(-90 60 60)' });
+  if (slices.length === 0) ring.append(createSvg('circle', { ...circle, class: 'pie-track' }));
+
+  let offset = 0;
+  slices.forEach(([name, share]) => {
+    const length = (share.kcal / totalKcal) * circumference;
+    const slice = createSvg('circle', {
+      ...circle,
+      class: `pie-slice pie-${name}`,
+      'stroke-dasharray': `${Math.max(0, length - gap)} ${circumference}`,
+      'stroke-dashoffset': -offset,
+    });
+    const title = createSvg('title');
+    title.textContent = `${MACRO_LABELS[name]}: ${macros[name]} г · ${share.kcal} ккал · ${share.percent}% калорий`;
+    slice.append(title);
+    ring.append(slice);
+    offset += length;
+  });
+
+  svg.append(ring);
+  $(`${prefix}-chart`).replaceChildren(svg);
+}
+
 function renderNorm() {
   const { norm } = state;
   $('norm-result').hidden = !norm;
@@ -94,9 +146,7 @@ function renderNorm() {
   $('norm-target').textContent = norm.target;
   $('norm-bmr').textContent = norm.bmr;
   $('norm-tdee').textContent = norm.tdee;
-  $('norm-protein').textContent = norm.macros.protein;
-  $('norm-fat').textContent = norm.macros.fat;
-  $('norm-carbs').textContent = norm.macros.carbs;
+  renderMacroChart('norm', norm.macros);
 }
 
 function renderDiary() {
@@ -138,9 +188,7 @@ function renderDiary() {
 
   const total = sumEntries(state.entries);
   $('total-kcal').textContent = total.kcal;
-  $('total-protein').textContent = total.protein;
-  $('total-fat').textContent = total.fat;
-  $('total-carbs').textContent = total.carbs;
+  renderMacroChart('total', total);
 
   const bar = $('progress-bar');
   const note = $('progress-note');

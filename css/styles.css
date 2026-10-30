@@ -8,9 +8,9 @@
   --accent-contrast: #ffffff;
   --danger: #c2413a;
   --warn: #b7791f;
-  --protein: #3a6fc4;
-  --fat: #c98a1c;
-  --carbs: #2f7d5b;
+  --protein: #2a78d6;
+  --fat: #eb6834;
+  --carbs: #1baf7a;
   --radius: 12px;
   color-scheme: light;
 }
@@ -26,9 +26,9 @@
     --accent-contrast: #0e1a14;
     --danger: #ec6b63;
     --warn: #e0a84a;
-    --protein: #6e9be6;
-    --fat: #e0a84a;
-    --carbs: #4bb486;
+    --protein: #3987e5;
+    --fat: #d95926;
+    --carbs: #199e70;
     color-scheme: dark;
   }
 }
@@ -175,6 +175,25 @@ input.invalid { border-color: var(--danger); }
 .macro-fat { border-color: var(--fat); }
 .macro-carbs { border-color: var(--carbs); }
 .macros-small .macro { font-size: 15px; padding: 8px 10px; }
+
+.macro-summary {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  align-items: center;
+  gap: 16px;
+}
+.macro-summary .macros { grid-template-columns: 1fr; gap: 6px; }
+.macro-summary-small { grid-template-columns: 108px 1fr; }
+
+.pie svg { display: block; width: 100%; height: auto; }
+.pie-track,
+.pie-slice { fill: none; stroke-width: 20; }
+.pie-track { stroke: var(--border); }
+.pie-slice { cursor: default; transition: opacity 0.15s ease; }
+.pie-protein { stroke: var(--protein); }
+.pie-fat { stroke: var(--fat); }
+.pie-carbs { stroke: var(--carbs); }
+.pie svg:hover .pie-slice:not(:hover) { opacity: 0.35; }
 
 .progress-block { margin-top: 20px; display: grid; gap: 8px; }
 .progress-row { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }

@@ -2,6 +2,7 @@ import {
   validateProfile,
   calcBmr,
   calcMacros,
+  calcMacroShares,
   calcDailyNorm,
   calcPortion,
   sumEntries,
@@ -35,6 +36,24 @@ export const tests = {
   },
   'calcMacros: делит калории 30/30/40'(assert) {
     assert.deepEqual(calcMacros(2000), { protein: 150, fat: 67, carbs: 200 });
+  },
+  'calcMacroShares: доли калорий нормы 30/30/40'(assert) {
+    assert.deepEqual(calcMacroShares({ protein: 150, fat: 67, carbs: 200 }), {
+      protein: { kcal: 600, percent: 30 },
+      fat: { kcal: 603, percent: 30 },
+      carbs: { kcal: 800, percent: 40 },
+    });
+  },
+  'calcMacroShares: проценты в сумме дают 100'(assert) {
+    const shares = calcMacroShares({ protein: 1, fat: 1, carbs: 1 });
+    assert.deepEqual(Object.values(shares).map((s) => s.percent), [24, 53, 23]);
+  },
+  'calcMacroShares: пустой дневник'(assert) {
+    assert.deepEqual(calcMacroShares({ protein: 0, fat: 0, carbs: 0 }), {
+      protein: { kcal: 0, percent: 0 },
+      fat: { kcal: 0, percent: 0 },
+      carbs: { kcal: 0, percent: 0 },
+    });
   },
   'calcPortion: пересчёт со 100 г на порцию'(assert) {
     const per100 = { kcal: 110, protein: 4.2, fat: 1.1, carbs: 21.3 };

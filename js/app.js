@@ -146,6 +146,7 @@ function renderNorm() {
   $('norm-target').textContent = norm.target;
   $('norm-bmr').textContent = norm.bmr;
   $('norm-tdee').textContent = norm.tdee;
+  $('norm-water').textContent = (norm.water / 1000).toLocaleString('ru-RU');
   renderMacroChart('norm', norm.macros);
 }
 

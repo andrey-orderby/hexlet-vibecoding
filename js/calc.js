@@ -20,6 +20,9 @@ export const MACRO_SPLIT = { protein: 0.3, fat: 0.3, carbs: 0.4 };
 // Калорийность 1 г макронутриента.
 export const KCAL_PER_GRAM = { protein: 4, fat: 9, carbs: 4 };
 
+// Норма воды на 1 кг веса, мл.
+export const WATER_ML_PER_KG = 30;
+
 export const MACRO_LABELS = { protein: 'Белки', fat: 'Жиры', carbs: 'Углеводы' };
 
 export const LIMITS = {
@@ -77,6 +80,11 @@ export function calcMacroShares(macros) {
   );
 }
 
+// Дневная норма воды по весу, мл (с округлением до 50 мл).
+export function calcWaterNorm(weight) {
+  return Math.round((weight * WATER_ML_PER_KG) / 50) * 50;
+}
+
 export function calcDailyNorm(profile) {
   const bmr = calcBmr(profile);
   const tdee = bmr * ACTIVITY_LEVELS[profile.activity].factor;
@@ -86,6 +94,7 @@ export function calcDailyNorm(profile) {
     tdee: Math.round(tdee),
     target,
     macros: calcMacros(target),
+    water: calcWaterNorm(profile.weight),
   };
 }
 

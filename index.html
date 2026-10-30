@@ -62,10 +62,13 @@
           <div><dt>Базовый обмен</dt><dd><span id="norm-bmr">0</span> ккал</dd></div>
           <div><dt>С учётом активности</dt><dd><span id="norm-tdee">0</span> ккал</dd></div>
         </dl>
-        <div class="macros">
-          <div class="macro macro-protein"><span id="norm-protein">0</span> г<small>белки</small></div>
-          <div class="macro macro-fat"><span id="norm-fat">0</span> г<small>жиры</small></div>
-          <div class="macro macro-carbs"><span id="norm-carbs">0</span> г<small>углеводы</small></div>
+        <div class="macro-summary">
+          <div id="norm-chart" class="pie"></div>
+          <div class="macros">
+            <div class="macro macro-protein"><span id="norm-protein">0</span> г<small>белки · <span id="norm-protein-pct">0</span>%</small></div>
+            <div class="macro macro-fat"><span id="norm-fat">0</span> г<small>жиры · <span id="norm-fat-pct">0</span>%</small></div>
+            <div class="macro macro-carbs"><span id="norm-carbs">0</span> г<small>углеводы · <span id="norm-carbs-pct">0</span>%</small></div>
+          </div>
         </div>
       </div>
     </section>
@@ -122,10 +125,13 @@
         </div>
         <div class="progress"><div id="progress-bar" class="progress-bar"></div></div>
         <p id="progress-note" class="hint"></p>
-        <div class="macros macros-small">
-          <div class="macro macro-protein"><span id="total-protein">0</span> г<small>белки</small></div>
-          <div class="macro macro-fat"><span id="total-fat">0</span> г<small>жиры</small></div>
-          <div class="macro macro-carbs"><span id="total-carbs">0</span> г<small>углеводы</small></div>
+        <div class="macro-summary macro-summary-small">
+          <div id="total-chart" class="pie"></div>
+          <div class="macros macros-small">
+            <div class="macro macro-protein"><span id="total-protein">0</span> г<small>белки · <span id="total-protein-pct">0</span>%</small></div>
+            <div class="macro macro-fat"><span id="total-fat">0</span> г<small>жиры · <span id="total-fat-pct">0</span>%</small></div>
+            <div class="macro macro-carbs"><span id="total-carbs">0</span> г<small>углеводы · <span id="total-carbs-pct">0</span>%</small></div>
+          </div>
         </div>
       </div>
 

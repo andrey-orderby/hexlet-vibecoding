@@ -20,6 +20,8 @@ export const MACRO_SPLIT = { protein: 0.3, fat: 0.3, carbs: 0.4 };
 // Калорийность 1 г макронутриента.
 export const KCAL_PER_GRAM = { protein: 4, fat: 9, carbs: 4 };
 
+export const MACRO_LABELS = { protein: 'Белки', fat: 'Жиры', carbs: 'Углеводы' };
+
 export const LIMITS = {
   age: [14, 100],
   height: [100, 250],
@@ -51,6 +53,27 @@ export function calcMacros(kcal) {
       name,
       Math.round((kcal * share) / KCAL_PER_GRAM[name]),
     ]),
+  );
+}
+
+// Доли калорий от белков / жиров / углеводов по их граммам.
+// Проценты округляются методом наибольшего остатка, чтобы в сумме давать ровно 100.
+export function calcMacroShares(macros) {
+  const names = Object.keys(KCAL_PER_GRAM);
+  const kcal = names.map((name) => (macros[name] ?? 0) * KCAL_PER_GRAM[name]);
+  const total = kcal.reduce((sum, value) => sum + value, 0);
+
+  const exact = kcal.map((value) => (total > 0 ? (value / total) * 100 : 0));
+  const percents = exact.map(Math.floor);
+  const missing = total > 0 ? 100 - percents.reduce((sum, value) => sum + value, 0) : 0;
+  exact
+    .map((value, index) => ({ index, rest: value - percents[index] }))
+    .sort((a, b) => b.rest - a.rest)
+    .slice(0, missing)
+    .forEach(({ index }) => { percents[index] += 1; });
+
+  return Object.fromEntries(
+    names.map((name, index) => [name, { kcal: Math.round(kcal[index]), percent: percents[index] }]),
   );
 }
 
